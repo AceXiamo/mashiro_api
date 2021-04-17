@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.blog.dao.TbCommentDetailDao">
+
+    <resultMap type="com.blog.entity.TbCommentDetail" id="TbCommentDetailMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="pid" column="pid" jdbcType="INTEGER"/>
+        <result property="blogId" column="blog_id" jdbcType="INTEGER"/>
+        <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
+        <result property="blogTitle" column="blog_title" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="OTHER"/>
+        <result property="commentStatus" column="comment_status" jdbcType="OTHER"/>
+        <result property="createBy" column="create_by" jdbcType="INTEGER"/>
+        <result property="isUser" column="is_user" jdbcType="OTHER"/>
+        <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+        <result property="qq" column="qq" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="ipAddress" column="ip_address" jdbcType="VARCHAR"/>
+        <result property="avatar" column="avatar" jdbcType="VARCHAR"/>
+        <result property="province" column="province" jdbcType="VARCHAR"/>
+        <result property="city" column="city" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--最新评论（按时间倒序前五条-->
+    <select id="queryByIndex" resultMap="TbCommentDetailMap">
+        select
+        t1.id, t1.pid, t1.parent_id, t1.content, t1.comment_status, t1.create_by, t1.is_user, t1.nickname, t1.qq,
+        t1.email, t1.ip_address, t1.avatar,
+        t1.create_time, t2.title blog_title, t2.blog_id
+        from db_xiamo_blog.tb_comment_detail t1
+        left join tb_comment t2 on t1.parent_id = t2.id
+        order by t1.create_time desc
+        limit 0, 5
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TbCommentDetailMap">
+        select
+          id, pid, parent_id, content, comment_status, create_by, is_user, nickname, qq, email, ip_address, avatar, create_time
+        from db_xiamo_blog.tb_comment_detail
+        where id = #{id}
+    </select>
+
+    <!--通过博客id作为查询条件查询-->
+    <select id="queryByblogId" resultMap="TbCommentDetailMap">
+        select
+          t1.id, t1.pid, t1.city, t1.province, t1.parent_id, t1.content, t1.comment_status, t1.create_by, t1.is_user, t1.nickname, t1.qq, t1.email, t1.ip_address, t1.avatar, t1.create_time
+        from db_xiamo_blog.tb_comment_detail t1
+        left join tb_comment t2 on t1.parent_id = t2.id
+        where t2.blog_id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TbCommentDetailMap">
+        select
+          id, pid, parent_id, content, comment_status, create_by, is_user, nickname, qq, email, ip_address, avatar, create_time
+        from db_xiamo_blog.tb_comment_detail
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="TbCommentDetailMap">
+        select
+        t1.id, t1.pid, t1.parent_id, t1.content, t1.comment_status, t1.create_by, t1.is_user, t1.nickname, t1.qq,
+        t1.email, t1.ip_address, t1.avatar,
+        t1.create_time, t2.title blog_title, t2.blog_id
+        from db_xiamo_blog.tb_comment_detail t1
+        left join tb_comment t2 on t1.parent_id = t2.id
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="pid != null">
+                and pid = #{pid}
+            </if>
+            <if test="parentId != null">
+                and parent_id = #{parentId}
+            </if>
+            <if test="content != null">
+                and content = #{content}
+            </if>
+            <if test="commentStatus != null">
+                and comment_status = #{commentStatus}
+            </if>
+            <if test="createBy != null">
+                and create_by = #{createBy}
+            </if>
+            <if test="isUser != null">
+                and is_user = #{isUser}
+            </if>
+            <if test="nickname != null and nickname != ''">
+                and nickname = #{nickname}
+            </if>
+            <if test="qq != null and qq != ''">
+                and qq = #{qq}
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email}
+            </if>
+            <if test="ipAddress != null and ipAddress != ''">
+                and ip_address = #{ipAddress}
+            </if>
+            <if test="avatar != null and avatar != ''">
+                and avatar = #{avatar}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into db_xiamo_blog.tb_comment_detail(pid, parent_id, content, comment_status, create_by, is_user, qq, email, ip_address, avatar, create_time, nickname, city, province)
+        values (#{pid}, #{parentId}, #{content}, #{commentStatus}, #{createBy}, #{isUser}, #{qq}, #{email}, #{ipAddress}, #{avatar}, #{createTime}, #{nickname}, #{city}, #{province})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into db_xiamo_blog.tb_comment_detail(pid, parent_id, content, comment_status, create_by, is_user, qq,
+        email, ip_address, avatar, create_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.pid}, #{entity.parentId}, #{entity.content}, #{entity.commentStatus}, #{entity.createBy},
+            #{entity.isUser}, #{entity.qq}, #{entity.email}, #{entity.ipAddress}, #{entity.avatar},
+            #{entity.createTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into db_xiamo_blog.tb_comment_detail(pid, parent_id, content, comment_status, create_by, is_user, qq,
+        email, ip_address, avatar, create_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.pid}, #{entity.parentId}, #{entity.content}, #{entity.commentStatus}, #{entity.createBy},
+            #{entity.isUser}, #{entity.qq}, #{entity.email}, #{entity.ipAddress}, #{entity.avatar},
+            #{entity.createTime})
+        </foreach>
+        on duplicate key update
+        pid = values(pid) , parent_id = values(parent_id) , content = values(content) , comment_status =
+        values(comment_status) , create_by = values(create_by) , is_user = values(is_user) , qq = values(qq) , email =
+        values(email) , ip_address = values(ip_address) , avatar = values(avatar) , create_time = values(create_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update db_xiamo_blog.tb_comment_detail
+        <set>
+            <if test="pid != null">
+                pid = #{pid},
+            </if>
+            <if test="parentId != null">
+                parent_id = #{parentId},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="commentStatus != null">
+                comment_status = #{commentStatus},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy},
+            </if>
+            <if test="isUser != null">
+                is_user = #{isUser},
+            </if>
+            <if test="qq != null and qq != ''">
+                qq = #{qq},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="ipAddress != null and ipAddress != ''">
+                ip_address = #{ipAddress},
+            </if>
+            <if test="avatar != null and avatar != ''">
+                avatar = #{avatar},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from db_xiamo_blog.tb_comment_detail where id = #{id}
+    </delete>
+
+</mapper>

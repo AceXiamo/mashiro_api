@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.blog.dao.TbBlogDao">
+
+    <resultMap type="com.blog.entity.TbBlog" id="TbBlogMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="commentId" column="comment_id" jdbcType="INTEGER"/>
+        <result property="commentNum" column="commentNum" jdbcType="INTEGER"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="contentMini" column="content_mini" jdbcType="VARCHAR"/>
+        <result property="coverImg" column="cover_img" jdbcType="VARCHAR"/>
+        <result property="creator" column="creator" jdbcType="VARCHAR"/>
+        <result property="creatorNickname" column="creator_nickname" jdbcType="VARCHAR"/>
+        <result property="view" column="view" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TbBlogMap">
+        select
+        t1.id, t1.title, t1.content, t1.content_mini, t1.cover_img, t1.creator, t1.creator_nickname, t1.view, t1.create_time, t1.update_time, t2.id comment_id
+        from tb_blog t1
+        left join tb_comment t2 on t1.id = t2.blog_id
+        where t1.id = #{id}
+    </select>
+
+    <!--最新博客（按时间倒序前五条-->
+    <select id="queryByIndex" resultMap="TbBlogMap">
+        select
+        id, content, title, content_mini, cover_img, creator, creator_nickname, view, create_time, update_time
+        from db_xiamo_blog.tb_blog
+        order by create_time desc
+        limit 0, 5
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TbBlogMap">
+       select t1.id,
+       t1.title,
+       t1.content_mini,
+       t1.cover_img,
+       t1.creator,
+       t1.creator_nickname,
+       t1.view,
+       t1.create_time,
+       t1.update_time from db_xiamo_blog.tb_blog t1
+        left join(select tc.id,count(tcd.id) as commentNum
+        from tb_comment tc
+        left join tb_comment_detail tcd on tc.id = tcd.parent_id) t2 on t1.id = t2.id
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="TbBlogMap">
+        select
+        id, title, content_mini, cover_img, creator, creator_nickname, view, create_time, update_time
+        from db_xiamo_blog.tb_blog
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="contentMini != null and contentMini != ''">
+                and content_mini = #{contentMini}
+            </if>
+            <if test="coverImg != null and coverImg != ''">
+                and cover_img = #{coverImg}
+            </if>
+            <if test="creator != null and creator != ''">
+                and creator = #{creator}
+            </if>
+            <if test="creatorNickname != null and creatorNickname != ''">
+                and creator_nickname = #{creatorNickname}
+            </if>
+            <if test="view != null and view != ''">
+                and view = #{view}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into db_xiamo_blog.tb_blog(content, title, content_mini, cover_img, creator, creator_nickname, view, create_time, update_time)
+        values (#{content}, #{title}, #{contentMini}, #{coverImg}, #{creator}, #{creatorNickname}, #{view}, #{createTime}, #{updateTime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into db_xiamo_blog.tb_blog(content, title, content_mini, cover_img, creator, creator_nickname, view,
+        create_time, update_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.content}, #{entity.title}, #{entity.contentMini}, #{entity.coverImg}, #{entity.creator},
+            #{entity.creatorNickname}, #{entity.view}, #{entity.createTime}, #{entity.updateTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into db_xiamo_blog.tb_blog(content, title, content_mini, cover_img, creator, creator_nickname, view,
+        create_time, update_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.content}, #{entity.title}, #{entity.contentMini}, #{entity.coverImg}, #{entity.creator},
+            #{entity.creatorNickname}, #{entity.view}, #{entity.createTime}, #{entity.updateTime})
+        </foreach>
+        on duplicate key update
+        content = values(content) , title = values(title) , content_mini = values(content_mini) , cover_img =
+        values(cover_img) , creator = values(creator) , creator_nickname = values(creator_nickname) , view =
+        values(view) , create_time = values(create_time) , update_time = values(update_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update db_xiamo_blog.tb_blog
+        <set>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="contentMini != null and contentMini != ''">
+                content_mini = #{contentMini},
+            </if>
+            <if test="coverImg != null and coverImg != ''">
+                cover_img = #{coverImg},
+            </if>
+            <if test="creator != null and creator != ''">
+                creator = #{creator},
+            </if>
+            <if test="creatorNickname != null and creatorNickname != ''">
+                creator_nickname = #{creatorNickname},
+            </if>
+            <if test="view != null and view != ''">
+                view = #{view},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from db_xiamo_blog.tb_blog where id = #{id}
+    </delete>
+
+</mapper>
