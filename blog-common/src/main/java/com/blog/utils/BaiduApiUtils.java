@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class BaiduApiUtils {
 
-  protected static String baiduKey = "1f29a8ad0a949c597b8c4b4f5f731593";
+  protected static String baiduKey = "";
   protected static String iptoaddress = "https://restapi.amap.com/v3/ip";
 
   public static Map<String, String> ipToAddresss(String ipAddress) {
