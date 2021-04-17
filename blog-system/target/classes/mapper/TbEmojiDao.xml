@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.blog.dao.TbEmojiDao">
+
+    <resultMap type="com.blog.entity.TbEmoji" id="TbEmojiMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="typeId" column="type_id" jdbcType="INTEGER"/>
+        <result property="emojiUrl" column="emoji_url" jdbcType="VARCHAR"/>
+        <result property="isDynamic" column="is_dynamic" jdbcType="OTHER"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="offset" column="offset" jdbcType="INTEGER"/>
+        <result property="limit" column="limit" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TbEmojiMap">
+        select
+          id, type_id, emoji_url, is_dynamic, create_by, create_time, update_time
+        from db_xiamo_blog.tb_emoji
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TbEmojiMap">
+        select
+          id, type_id, emoji_url, is_dynamic, create_by, create_time, update_time
+        from db_xiamo_blog.tb_emoji
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="TbEmojiMap">
+        select
+        id, type_id, emoji_url, is_dynamic, create_by, create_time, update_time
+        from db_xiamo_blog.tb_emoji
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="typeId != null">
+                and type_id = #{typeId}
+            </if>
+            <if test="emojiUrl != null and emojiUrl != ''">
+                and emoji_url = #{emojiUrl}
+            </if>
+            <if test="isDynamic != null">
+                and is_dynamic = #{isDynamic}
+            </if>
+            <if test="createBy != null and createBy != ''">
+                and create_by = #{createBy}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into db_xiamo_blog.tb_emoji(type_id, emoji_url, is_dynamic, create_by, create_time, update_time)
+        values (#{typeId}, #{emojiUrl}, #{isDynamic}, #{createBy}, #{createTime}, #{updateTime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into db_xiamo_blog.tb_emoji(type_id, emoji_url, is_dynamic, create_by, create_time, update_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.typeId}, #{entity.emojiUrl}, #{entity.isDynamic}, #{entity.createBy}, #{entity.createTime},
+            #{entity.updateTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into db_xiamo_blog.tb_emoji(type_id, emoji_url, is_dynamic, create_by, create_time, update_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.typeId}, #{entity.emojiUrl}, #{entity.isDynamic}, #{entity.createBy}, #{entity.createTime},
+            #{entity.updateTime})
+        </foreach>
+        on duplicate key update
+        type_id = values(type_id) , emoji_url = values(emoji_url) , is_dynamic = values(is_dynamic) , create_by =
+        values(create_by) , create_time = values(create_time) , update_time = values(update_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update db_xiamo_blog.tb_emoji
+        <set>
+            <if test="typeId != null">
+                type_id = #{typeId},
+            </if>
+            <if test="emojiUrl != null and emojiUrl != ''">
+                emoji_url = #{emojiUrl},
+            </if>
+            <if test="isDynamic != null">
+                is_dynamic = #{isDynamic},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from db_xiamo_blog.tb_emoji where id = #{id}
+    </delete>
+
+</mapper>
