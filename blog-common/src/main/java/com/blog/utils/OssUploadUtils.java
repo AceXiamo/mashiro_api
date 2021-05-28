@@ -10,10 +10,10 @@ import java.net.URLConnection;
 
 // 阿里云上传文件
 public class OssUploadUtils {
-  private static String endpoint = "http://oss-accelerate.aliyuncs.com";
-  private static String accessKeyId = "LTAII0Ifl4gE6STf";
-  private static String accessKeySecret = "M6WByy234U3BapI9UFB6JnKf02Rak4";
-  private static String bucketName = "xiamo";
+  private static String endpoint = "";
+  private static String accessKeyId = "";
+  private static String accessKeySecret = "";
+  private static String bucketName = "";
 
   public static void fileToByte(String neturl, String filepath) {
     try {
