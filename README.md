@@ -10,7 +10,7 @@ QQ：1499147526<br/>
 
 注：请配合我开发的Vue博客一起使用(当然，只用后端，前端自己敲那必然也是可以的)
 
-> [mashiro](https://gitee.com/xm17906193/mashiro)
+> [mashiro](https://github.com/xm17906193/mashiro)
 
 ![输入图片说明](https://xiamo.oss-accelerate.aliyuncs.com/xiamo_avatar/2021041515212375250358.png "在这里输入图片标题")
 
