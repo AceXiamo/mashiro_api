@@ -7,8 +7,6 @@
 这个博客后续我会持续更新，添加新功能啥的，不过时间待定:satisfied:<br/>
 如果你有好的建议也可以联系我<br/>
 QQ：1499147526<br/>
-WeChat：<br/>
-![输入图片说明](https://xiamo.oss-accelerate.aliyuncs.com/xiamo_avatar/2021041714232801394300.png "在这里输入图片标题")
 
 注：请配合我开发的Vue博客一起使用(当然，只用后端，前端自己敲那必然也是可以的)
 
